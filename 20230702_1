@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int maximumRequests(int n, vector<vector<int>>& requests) {
+        vector<int> score;
+        score.resize(n);
+        for(int i= 0; i< requests.size(); i++){
+            score[requests[i][0]]--;
+            score[requests[i][1]]++;
+        }
+        int cant= 0;
+        for(int i= 0; i< n; i++){
+            if(score[i]>0)
+                cant+= score[i];
+        }
+        int ans= requests.size()- cant;
+        return ans;
+    }
+};
