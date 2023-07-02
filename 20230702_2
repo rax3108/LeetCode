@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maximumRequests(int n, vector<vector<int>>& requests) {
+        score.resize(n);
+        dfs(0, 0, requests);
+        return ans;
+    }
+    void dfs(int i, int passes, vector<vector<int>>& requests){
+        if (i == requests.size()) {
+            if (all_of(begin(score), end(score), [](int d) {return d == 0;}))
+                ans= max(ans, passes);
+            return;
+        }
+
+        dfs(i+ 1, passes, requests);
+
+        score[requests[i][0]]++;
+        score[requests[i][1]]--;
+        dfs(i+ 1, passes+ 1, requests);
+        score[requests[i][0]]--;
+        score[requests[i][1]]++;
+    }
+private:
+    vector<int> score;
+    int ans;
+};
