@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int maxConsecutiveAnswers(string answerKey, int k) {
+        if (answerKey.empty()) {
+            return 0;
+        }
+        vector<char> key(answerKey.begin(), answerKey.end());
+        int n= key.size();
+        //if n<= k, then must be all same ans
+        if(n<= (k+1))
+            return n;
+
+        //record the top k+1 T and F amount
+        int T_count= 0, F_count= 0;
+        for(int i= 0; i<= k; i++){
+            if(key[i]== 'T')
+                T_count++;
+            else
+                F_count++;
+        }
+
+        //continue to add length, if new one can't hold, then contain the length and translate to next
+        int l_pointer= 0;
+        int r_pointer= k;
+        while(r_pointer< n-1){
+            int new_T_count= T_count, new_F_count= F_count;
+            if(key[r_pointer+1]== 'T')
+                new_T_count++;
+            else
+                new_F_count++;
+            
+            if(min(new_T_count, new_F_count)> k){
+                if(key[l_pointer]== 'T')
+                    T_count--;
+                else
+                    F_count--;
+                l_pointer++;
+            }
+            r_pointer++;
+            if(key[r_pointer]== 'T')
+                T_count++;
+            else
+                F_count++;
+        }
+        return r_pointer-l_pointer+1;
+    }
+};
