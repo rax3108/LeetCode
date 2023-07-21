@@ -1,0 +1,64 @@
+class Solution {
+public:
+    vector<int> asteroidCollision(vector<int>& asteroids) {
+        vector<int> ans;
+        if(asteroids.empty()){return ans;}
+        ans.push_back(asteroids[0]);
+        for(int i= 1; i< asteroids.size(); i++){
+            //ans become null
+            if(ans.empty()){
+                ans.push_back(asteroids[i]);
+                continue;
+            }
+            //new is same direction with old
+            if(same_sing(asteroids[i], ans[ans.size()-1])){
+                ans.push_back(asteroids[i]);
+            }
+            //diff direction but won't meet
+            if(ans[ans.size()-1]<0 && asteroids[i]> 0){
+                ans.push_back(asteroids[i]);
+            }
+            //new meet old
+            if(ans[ans.size()-1]>0 && asteroids[i]< 0){
+                int left= abs(ans[ans.size()-1]);
+                int right= abs(asteroids[i]);
+                //if left smaller than right
+                //right will keep go left
+                while(!ans.empty()){
+                    //become same direction
+                    if(ans[ans.size()-1]<0){
+                        break;
+                    }
+                    if(left== right){
+                        ans.pop_back();
+                        right= 0;//to pushback right or not
+                        break;
+                    }
+                    if(left> right){
+                        right= 0;
+                        break;
+                    }
+                    if(left< right){
+                        ans.pop_back();
+                        //if pop make ans empty -> break while
+                        if(ans.empty()){
+                            break;
+                        }
+                        left= abs(ans[ans.size()-1]);
+                    }
+                }
+                if(right!= 0){
+                    ans.push_back(asteroids[i]);
+                }
+            }
+        }
+        return ans;
+    }
+
+    bool same_sing(int a, int b){
+        if(a*b< 0)//diff sing
+            return false;
+        else//same sing
+            return true;
+    }
+};
