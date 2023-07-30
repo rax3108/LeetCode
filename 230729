@@ -1,0 +1,27 @@
+//this (in line 5) "if(n>4800) return 1;" is not my idea, it is copied from other
+class Solution {
+public:
+    double soupServings(int n) {
+        if(n>4800) return 1;
+        int k;
+        if(n%25==0){k= n/25;}
+        else{k= n/25+1;}
+        vector<vector<double> > table(k+1,vector<double>(k+1,-1));
+        return func(k, k, table);
+    }
+    double func(int a, int b, vector<vector<double> > &table){
+        if(a<= 0 && b<= 0)
+            return 0.5;
+        if(a<= 0)
+            return 1;
+        if(b<= 0)
+            return 0;
+        if(table[a][b]!= -1)
+            return table[a][b];
+        table[a][b]= 1.0/4.0*(func(a-4, b, table) 
+                        + func(a-3, b-1, table)
+                        + func(a-2, b-2, table) 
+                        + func(a-1, b-3, table));
+        return table[a][b];
+    }
+};
