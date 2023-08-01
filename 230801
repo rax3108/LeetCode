@@ -1,0 +1,19 @@
+class Solution {
+public:
+    vector<vector<int>> combine(int n, int k) {
+        vector<int> line(k);
+        sol(1, n, k, line);
+        return ans;
+    }
+    void sol(int start, int n, int k, vector<int> &line){
+        if (k == 0) {
+            ans.push_back(line);
+            return;
+        }
+        for (int i = start; i <= n; i++) {
+            line[line.size() - k] = i;
+            sol(i + 1, n, k - 1, line);
+        }
+    }
+    vector<vector<int>> ans;
+};
