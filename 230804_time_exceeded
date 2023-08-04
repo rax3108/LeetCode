@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool wordBreak(string s, vector<string>& wordDict) {
+        int dictsize= wordDict.size();
+        //write into map
+        for(int i= 0; i< dictsize; i++){
+            dict_map[wordDict[i][0]].push_back(wordDict[i]);
+        }
+        //test if all capital of s in vector
+        map<char, bool> test;
+        for(int i= 0; i< wordDict.size(); i++ ){
+            for(int j= 0; j< wordDict[i].size(); j++){
+                test[wordDict[i][j]]= true;
+            }
+        }
+        for(int i= 0; i< s.size(); i++){
+            if(!test[s[i]]){cout << "false"; return false;}
+        }
+        //run
+        recursive(s, 0);
+        if(flag){cout << "true";}
+        if(!flag){cout << "false";}
+        return flag;
+    }
+    void recursive(string s, int pointer){
+        //if it success , retrun true
+        if(flag== true || pointer== s.size()){ flag= true; return;}
+        char next_word= s[pointer]; //get map's index
+        //each word in map be searched
+        for(int i= 0; i< dict_map[next_word].size(); i++){
+            string a_word, b_word;
+            b_word= dict_map[next_word][i];
+            a_word= a_word.assign(s, pointer, b_word.size());
+            if(a_word!= b_word){ continue;}
+            recursive(s, pointer+ b_word.size());
+        }
+    }
+
+private:
+    map<char, vector<string> > dict_map;
+    bool flag= false;
+};
