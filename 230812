@@ -1,0 +1,46 @@
+//非常白爛的題目
+//題目要求提到結果不會出現溢位情況，沒錯，確實沒有，但是計算過程會溢位= =
+//我寫了兩種，第一次是直接建一個新的long long二維陣列，但是記憶體消耗太多
+//這版寫的是利用溢位不影響結果的邏輯，讓程式判斷只要出現溢位就直接不算了(甚至其實我讓他歸0)
+//算是在不過度增加時間跟空間情況下的妥協
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& obstacleGrid) {
+        int row= obstacleGrid.size();
+        int col= obstacleGrid[0].size();
+        if(obstacleGrid[row-1][col-1]== 1){return 0;}
+        //copy a new frame is better,
+        //but in this case, we give away for efficiency
+        long long a=0;
+        for(int i= row-1; i>= 0; i--){
+            for(int j= col-1; j>= 0; j--){
+                //if it is on obstacle or at end
+                if(i==row-1 && j==col-1){obstacleGrid[i][j]=1;continue;}
+                if(obstacleGrid[i][j]==1){obstacleGrid[i][j]=0;continue;}
+                //else
+                a=0;
+                if(i!=row-1){
+                    a=a+ obstacleGrid[i][j]+ obstacleGrid[i+1][j];
+                    if(a>= 2000000000){obstacleGrid[i][j]= 0; continue;}
+                    obstacleGrid[i][j]= a;
+                }
+                a=0;
+                if(j!=col-1){
+                    a=a+ obstacleGrid[i][j]+ obstacleGrid[i][j+1];
+                    if(a>= 2000000000){obstacleGrid[i][j]= 0; continue;}
+                    obstacleGrid[i][j]= a;
+                }
+            }
+        }
+        //test(row, col, obstacleGrid);
+        return obstacleGrid[0][0];
+    }
+    void test(int row, int col, vector<vector<int>>& obstacleGrid){
+        for(int i= 0; i< row; i++){
+            for(int j= 0; j< col; j++){
+                cout << obstacleGrid[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+};
