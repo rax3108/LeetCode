@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int minimizeXor(int num1, int num2) {
+        int num2_bits= 0;
+        while (num2) { // 檢查num2的number of set bits
+            num2_bits += (num2 & 1);
+            num2 >>= 1;
+        }
+
+        int ans= 0;
+        for (int i = 31; i >= 0; --i){
+            // 檢查 num1 的第 i 位是否為 1 並確認 sum 不為 0
+            if ((num1 & (1 << i)) && num2_bits != 0){
+                ans |= (1 << i);
+                num2_bits-=1;
+            }
+        }
+        for (int i = 0; i < 32; ++i){
+            // 檢查 num1 的第 i 位是否為 0 並確認 sum 不為 0
+            if (!(num1 & (1 << i)) && num2_bits != 0){
+                ans |= (1 << i);
+                num2_bits-=1;
+            }
+        }
+        return ans;
+    }
+};
