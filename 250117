@@ -1,0 +1,29 @@
+// my solution
+class Solution {
+public:
+    bool doesValidArrayExist(vector<int>& derived) {
+        int d_size= derived.size();
+        vector<int> origin(d_size, 0);
+        for(int i= 1; i< d_size; i++){
+            origin[i]= ((origin[i-1]+derived[i-1])!=1)? 0 : 1;
+        }
+        if((origin[d_size-1]^derived[d_size-1])== 0)
+            return true;
+        else
+            return false;
+    }
+};
+
+// faster sol
+class Solution_ {
+public:
+    bool doesValidArrayExist(vector<int>& derived) {
+        int n = derived.size();
+        int ans = 0;
+        for(int i = 0; i < n; i++){
+            ans ^= derived[i];
+        }
+        if(ans == 0)return true;
+        return false;
+    }
+};
