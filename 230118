@@ -1,0 +1,49 @@
+// ###這題的解法是看別人的###
+class Solution {
+public:
+    int minCost(vector<vector<int>>& grid) {
+        int rownum= grid.size();
+        int colnum= grid[0].size();
+        vector<vector<int>> weight_table(rownum, vector<int>(colnum, INT_MAX));
+        vector<vector<int>> pref_weight_table(rownum, vector<int>(colnum, 0));
+        weight_table[0][0]= 0;
+        while(weight_table!= pref_weight_table){
+            pref_weight_table= weight_table;
+            // forward
+            for(int i= 0; i< rownum; i++){
+                for(int j= 0; j< colnum; j++){
+                    if(j> 0){
+                        weight_table[i][j]= min(
+                            weight_table[i][j], 
+                            (weight_table[i][j-1]+
+                                (grid[i][j-1]== 1 ? 0 :1)));
+                    }
+                    if(i> 0){
+                        weight_table[i][j]= min(
+                            weight_table[i][j], 
+                            (weight_table[i-1][j]+
+                                (grid[i-1][j]== 3 ? 0 :1)));
+                    }
+                }
+            }
+            // backward
+            for(int i= 0; i< rownum; i++){
+                for(int j= 0; j< colnum; j++){
+                    if(j< colnum-1){
+                        weight_table[i][j]= min(
+                            weight_table[i][j], 
+                            (weight_table[i][j+1]+
+                                (grid[i][j+1]== 2 ? 0 :1)));
+                    }
+                    if(i< rownum-1){
+                        weight_table[i][j]= min(
+                            weight_table[i][j], 
+                            (weight_table[i+1][j]+
+                                (grid[i+1][j]== 4 ? 0 :1)));
+                    }
+                }
+            }
+        }
+        return weight_table[rownum-1][colnum-1];
+    }
+};
