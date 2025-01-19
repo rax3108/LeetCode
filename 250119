@@ -1,0 +1,38 @@
+// 利用動態規劃、多次迭代，基本概念跟昨天一樣
+// 找周邊格的狀況，自己的儲水高點必定跟周邊格相同
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int m= heightMap.size(), n= heightMap[0].size();
+        if(m<= 2 || n<= 2){
+            return 0;
+        }
+        vector<vector<int>> copyMap(m, vector<int>(n, INT_MAX));
+        vector<vector<int>> pre_copyMap(m, vector<int>(n));
+        for(int i= 0; i< m; i++){
+            copyMap[i][0]= heightMap[i][0];
+            copyMap[i][n-1]= heightMap[i][n-1];
+        }
+        for(int i= 0; i< n; i++){
+            copyMap[0][i]= heightMap[0][i];
+            copyMap[m-1][i]= heightMap[m-1][i];
+        }
+        while(copyMap != pre_copyMap){
+            pre_copyMap= copyMap;
+            for(int i= 1; i< m-1; i++){
+                for(int j= 1; j< n-1; j++){
+                    copyMap[i][j]= max(heightMap[i][j], 
+                        min(min(copyMap[i-1][j], copyMap[i][j-1]), 
+                            min(copyMap[i+1][j], copyMap[i][j+1])));
+                }
+            }
+        }
+        int sum= 0;
+        for(int i= 0; i< m; i++){
+            for(int j= 0; j< n; j++){
+                sum+= copyMap[i][j]- heightMap[i][j];
+            }
+        }
+        return sum;
+    }
+};
