@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int firstCompleteIndex(vector<int>& arr, vector<vector<int>>& mat) {
+        int totalnum= arr.size();
+        vector<int> new_arr(totalnum+1);
+        // rearrange the arr, let index/val exchange 
+        for(int i= 0; i< totalnum; i++){
+            new_arr[arr[i]]= i+1;
+        }
+        // make mat element be real order
+        for (auto& row : mat){
+            for (auto& element : row){
+                element= new_arr[element];
+            }
+        }
+
+        // find min(all max(rows), all max(col))
+        int numRows = mat.size();
+        int numCols = mat[0].size();
+        int minRowMax = INT_MAX;
+        for (int i = 0; i < numRows; i++) {
+            int rowMax = *max_element(mat[i].begin(), mat[i].end());
+            minRowMax = min(minRowMax, rowMax);
+        }
+        int minColMax = INT_MAX;
+        for (int j = 0; j < numCols; j++) {
+            int colMax = INT_MIN;
+            for (int i = 0; i < numRows; i++) {
+                colMax = max(colMax, mat[i][j]);
+            }
+            minColMax = min(minColMax, colMax);
+        }
+
+        return min(minRowMax, minColMax)-1;
+    }
+};
