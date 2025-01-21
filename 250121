@@ -1,0 +1,19 @@
+// 用a=min(a,b)取代if(a<b){a=b;}會比較快
+// 因為(b < a) ? b : a這個判斷式運作得更便捷，而min是將它作為inline program寫入的
+
+class Solution {
+public:
+    long long gridGame(vector<vector<int>>& grid) {
+        long long top= accumulate(grid[0].begin()+1, grid[0].end(), 0LL);
+        long long bottom= 0;
+        long long ans= top;
+        int n= grid[0].size();
+        // when that bot A get down
+        for(int i= 1; i< n; i++){
+            top-= grid[0][i];
+            bottom+= grid[1][i-1];
+            ans= min(ans, max(top, bottom));
+        }
+        return ans;
+    }
+};
