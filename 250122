@@ -1,0 +1,33 @@
+// 部分參考chatGPT
+
+class Solution {
+public:
+    vector<vector<int>> highestPeak(vector<vector<int>>& isWater) {
+        int rows = isWater.size(), cols = isWater[0].size();
+        queue<pair<int, int>> onProcess;
+        for(int i= 0; i< rows; i++){
+            for(int j= 0; j< cols; j++){
+                if(isWater[i][j]== 1){
+                    isWater[i][j]= 0;
+                    onProcess.push({i, j});
+                }
+                else{
+                    isWater[i][j]= INT_MAX;
+                }
+            }
+        }
+        int direction[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        while(!onProcess.empty()){
+            auto [x, y] = onProcess.front();
+            onProcess.pop();
+            for (auto& dir : direction) {
+                int nx = x + dir[0], ny = y + dir[1];
+                if (nx >= 0 && nx < rows && ny >= 0 && ny < cols && isWater[nx][ny]== INT_MAX) {
+                    isWater[nx][ny] = isWater[x][y] + 1;
+                    onProcess.push({nx, ny});
+                }
+            }
+        }
+        return isWater;
+    }
+};
