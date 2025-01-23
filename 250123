@@ -1,0 +1,40 @@
+// 速度太慢，我在想可能是因為每次判斷都需要遍歷整行(或列)的grid，找方法把用過的關掉可能會更快
+class Solution {
+public:
+    int countServers(vector<vector<int>>& grid) {
+        queue<pair<int, int>> server;
+        int m = grid.size(), n = grid[0].size();
+        int ans= 0; 
+        // 遍歷
+        for(int i= 0; i< m; i++){
+            for(int j= 0; j< n; j++){
+                if(grid[i][j]== 1){
+                    server.push({i, j});
+                    grid[i][j]= 0;
+                }
+                int add_num= 0;
+                // 把server同行列的加入queue
+                while(!server.empty()){
+                    add_num+= 1;
+                    auto [x, y] = server.front();
+                    server.pop();
+                    for(int nx= 0; nx< m; nx++){
+                        if(grid[nx][y]== 1){
+                            server.push({nx, y});
+                            grid[nx][y]= 0;
+                        }
+                    }
+                    for(int ny= 0; ny< n; ny++){
+                        if(grid[x][ny]== 1){
+                            server.push({x, ny});
+                            grid[x][ny]= 0;
+                        }
+                    }
+                }
+                // 例外消除，如果只有一台server就不加
+                ans+= ((add_num== 1)? 0 : add_num);
+            }
+        }
+        return ans;
+    }
+};
