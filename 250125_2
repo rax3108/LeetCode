@@ -1,0 +1,40 @@
+#include <unordered_map>
+#include <list>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> lexicographicallySmallestArray(vector<int>& nums, int limit) {
+        int n = nums.size();
+        vector<int> sorted = nums;
+        sort(sorted.begin(), sorted.end());
+
+        int currGroup = 0;
+        unordered_map<int, int> numToGroup;  // number to group index
+        unordered_map<int, list<int>> groupToList;  // group index to list
+
+        numToGroup[sorted[0]] = currGroup;
+        groupToList[currGroup].push_back(sorted[0]);
+
+        // classify
+        for (int i = 1; i < n; i++) {
+            if (abs(sorted[i] - sorted[i - 1]) > limit) {
+                currGroup++;
+            }
+            numToGroup[sorted[i]] = currGroup;
+            groupToList[currGroup].push_back(sorted[i]);
+        }
+
+        // Replace elements
+        for (int i = 0; i < n; i++) {
+            int num = nums[i];
+            int group = numToGroup[num];
+            nums[i] = groupToList[group].front();
+            groupToList[group].pop_front();
+        }
+
+        return nums;
+    }
+};
