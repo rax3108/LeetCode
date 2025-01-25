@@ -1,0 +1,31 @@
+// 概念是對的，但是資料結構用vector會比較慢，所以需要改成unordered_map = =;;，真是智障
+
+class Solution {
+public:
+    vector<int> lexicographicallySmallestArray(vector<int>& nums, int limit) {
+        int n= nums.size();
+        vector<int> sorted= nums;
+        sort(sorted.begin(), sorted.end());
+        // 製作二維向量，讓同row者最終能互相swap
+        vector<deque<int>> class_sort{{sorted[0]}};
+        int pointer= 0;
+        for(int i= 1; i< n; i++){
+            if(abs(sorted[i]- class_sort[pointer].back())<= limit)
+                class_sort[pointer].push_back(sorted[i]);
+            else{
+                pointer+= 1;
+                class_sort.push_back(deque<int> {sorted[i]});
+            }
+        }
+        for(int i= 0; i< n; i++){
+            pointer= 0; //回收利用pointer
+            while (pointer < class_sort.size() - 1 &&
+                    nums[i] > class_sort[pointer].back()) {
+                pointer++;
+            }
+            nums[i]= class_sort[pointer][0];
+            class_sort[pointer].pop_front();
+        }
+        return nums;
+    }
+};
