@@ -1,0 +1,84 @@
+// 有兩種情況，自成一桌(cycle)跟鏈狀排列(block)，不同鏈可以同時存在，但cycle只能選最長的圈
+// 先除外cycle，並把會指向cycle的鏈也排除(因為注定沒救)
+// 鏈的特性是->其中一個末端會形成i=favorite[favorite[i]]，也就是互相喜歡的對子
+// 因此只要能反向判斷喜歡這個對子的最長鏈就能得到一個block的長度
+// block節點處理部分，對子各自被喜歡的最長鏈可以各自判斷而不影響
+// 應該有更快的寫法，例如一次遍歷同時做到cycle跟block判斷，只是有點麻煩，現在這樣就有前40%速度了
+
+class Solution {
+private:
+    int DFS(int node, vector<vector<int>>& favored, vector<bool>& visited) { // 處理block專用
+        visited[node] = true;
+        int max_depth = 0;
+        for (int neighbor : favored[node]) {
+            if (!visited[neighbor]) {
+                max_depth = max(max_depth, DFS(neighbor, favored, visited));
+            }
+        }
+        return 1 + max_depth; // 包含自己節點
+    }
+
+public:
+    int maximumInvitations(vector<int>& favorite) {
+        int n= favorite.size();
+        // 0=not visited, 1=visiting, -1=visited, 2=block start
+        vector<int> visited(n, 0);
+        int cycle_max= 0;
+
+        // 找 cycle 和 block
+        // 以下是類型處理以及最大cycle長度判斷
+        for (int i= 0; i< n; i++){
+            if (visited[i] != 0) continue;
+            int pointer= i;
+            vector<int> chain= {i};
+            visited[i]= 1;
+
+            // 尋找循環
+            while (visited[favorite[pointer]]== 0){
+                pointer = favorite[pointer];
+                chain.push_back(pointer);
+                visited[pointer]= 1;
+            }
+
+            if (visited[favorite[pointer]]== 1){ // 發現 cycle
+                if(pointer== favorite[favorite[pointer]]){ // 最後為對子
+                    for(int node : chain) visited[node]= -2;
+                    visited[pointer]= 2;
+                    visited[favorite[pointer]]= 2;
+                    continue;
+                }
+                int cycle_start= favorite[pointer];
+                int cycle_len= 1;
+                while (cycle_start!= pointer) {
+                    cycle_start= favorite[cycle_start];
+                    cycle_len++;
+                }
+                cycle_max= max(cycle_max, cycle_len);
+                for(int node : chain) visited[node]= -1;
+            } else if (visited[favorite[pointer]]== 2 || visited[favorite[pointer]]== -2){ // 碰上既存對子
+                for (int node : chain) visited[node]= -2;
+            } else{ // 標記已訪問
+                for (int node : chain) visited[node]= -1;
+            }
+        }
+
+        // 以下是block處理
+        // 建立反向鄰接表
+        vector<vector<int>> favored(n, vector<int>{});
+        for(int i = 0; i < n; i++){
+            if (visited[i]== -2) { // 忽略 cycle 的節點
+                favored[favorite[i]].push_back(i);
+            }
+        }
+
+        // 處理 block 節點
+        int blocks_size = 0;
+        vector<bool> dfs_visited(n, false);
+        for(int i = 0; i < n; i++){
+            if(visited[i] == 2 && !dfs_visited[i]){
+                blocks_size+= DFS(i, favored, dfs_visited);
+            }
+        }
+        return max(cycle_max, blocks_size);
+    }
+};
