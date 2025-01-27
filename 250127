@@ -1,0 +1,49 @@
+// 今天沒空改了，利用DFS以及set的特性更新前置課程，課程處理完畢會被打上標籤以便後續處理時跳過
+// 看到快的寫法是使用Topological Sorting更新表
+// E=prerequisites長度，Q=queries的長度，𝑉=課程數，P=課程間前置關係數總和
+// 時間差異:我的=O(E+P^2+Q), 別人的=O(V^2+E+Q)
+
+class Solution {
+private:
+    void DFS(unordered_map<int, unordered_set<int>>& course_to_pre, int course, vector<bool>& processed){
+        if (processed[course]) return;
+
+        vector<int> to_add; // 暫存待插入的前置課程
+        for(int pre_course : course_to_pre[course]){
+            if(!processed[pre_course]){
+                DFS(course_to_pre, pre_course, processed);
+            }
+            for(int add_course : course_to_pre[pre_course]){
+                to_add.push_back(add_course);
+            }
+        }
+        // 加入
+        for(int new_pre_course : to_add){
+            course_to_pre[course].insert(new_pre_course);
+        }
+        processed[course] = true;
+    }
+public:
+    vector<bool> checkIfPrerequisite(int numCourses, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
+        unordered_map<int, unordered_set<int>> course_to_pre;
+        for(int i= 0; i< prerequisites.size(); i++){
+            course_to_pre[prerequisites[i][1]].insert(prerequisites[i][0]);
+        }
+        vector<bool> processed(numCourses, false);
+        // process DFS
+        for(int i= 0; i< numCourses; i++){
+            DFS(course_to_pre, i, processed);
+        }
+        // ans
+        vector<bool> ans;
+        for(int i= 0; i< queries.size(); i++){
+            if(course_to_pre[queries[i][1]].find(queries[i][0])!= course_to_pre[queries[i][1]].end()){
+                ans.push_back(true);
+            }
+            else{
+                ans.push_back(false);
+            }
+        }
+        return ans;
+    }
+};
