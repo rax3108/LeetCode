@@ -1,0 +1,33 @@
+class Solution {
+private:
+    int directs[4][2]= {{1,0},{-1,0},{0,1},{0,-1}};
+    int m, n; // grid長寬
+    int adjacent(vector<vector<int>>& grid, int x, int y){ // 鄰接格計算
+        int fishes= grid[x][y];
+        grid[x][y]= 0;
+        for(auto &direct : directs){
+            int nx= x+ direct[0];
+            int ny= y+ direct[1];
+            if(nx< grid.size() && nx>=0 &&
+                ny< grid[0].size() && ny>=0
+                && grid[nx][ny]!= 0){
+                    fishes+= adjacent(grid, nx, ny);
+                }
+        }
+        return fishes;
+    }
+public:
+    int findMaxFish(vector<vector<int>>& grid) {
+        m= grid.size();
+        n= grid[0].size();
+        int ans= 0;
+        for(int i= 0; i< m; i++){
+            for(int j= 0; j< n; j++){
+                if(grid[i][j]!= 0){
+                    ans= max(ans, adjacent(grid, i, j));
+                }
+            }
+        }
+        return ans;
+    }
+};
