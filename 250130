@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        unordered_map<int, vector<int>> neighbor;
+        // 連結點集
+        for(auto& edge : edges){
+            neighbor[edge[0]].push_back(edge[1]);
+            neighbor[edge[1]].push_back(edge[0]);
+        }
+        for(int i= edges.size()-1; i>= 0; i--){
+            vector<bool> visited(neighbor.size(), false);
+            visited[edges[i][0]]= true;
+            queue<int> q;
+            // 將a點的鄰居加入queue
+            for(int j= 0; j< neighbor[edges[i][0]].size(); j++){
+                if(neighbor[edges[i][0]][j]!= edges[i][1]){
+                    q.push(neighbor[edges[i][0]][j]);
+                }
+            }
+            // 跑完q確認b點是否與a相連
+            while(!q.empty()){
+                visited[q.front()]= true;
+                for(int j= 0; j< neighbor[q.front()].size(); j++){
+                    if(neighbor[q.front()][j]== edges[i][1]){
+                        return vector<int> {edges[i][0], edges[i][1]};
+                    }
+                    if(!visited[neighbor[q.front()][j]]){
+                        q.push(neighbor[q.front()][j]);
+                    }
+                }
+                q.pop();
+            }
+        }
+        return vector<int> {};
+    }
+};
