@@ -1,0 +1,97 @@
+// 寫了三天才寫明白，總之先判斷可行性，順便提取leaf以供後續使用
+// 找group數量那邊我是靠提示才想到的，因為可行性已經確認，所以只要用所有leaf做為root去一一嘗試出結果就好
+
+class Solution {
+private:
+    vector<int> nodes_layer;
+    map<int, vector<int>> neighbors;
+    vector<int> leaves;
+
+    bool find_leaf(queue<int>& now_layer){
+        queue<int> next_layer={};
+        while(!now_layer.empty()){
+            if(!tree(now_layer.front(), next_layer)){ // 若無法形成
+                return false; // 返回失敗
+            }
+            now_layer.pop();
+        }
+        if(!next_layer.empty()){
+            return find_leaf(next_layer);
+        }
+        return true;
+    }
+    bool tree(int node, queue<int>& next_layer){
+        int now_layer= nodes_layer[node];
+        bool has_kid= false;
+        for(auto &neighbor : neighbors[node]){
+            if(nodes_layer[neighbor]== now_layer-1){continue;} // 該node為父節點
+            else if(nodes_layer[neighbor]== now_layer+1){ // 該node為已記錄之子節點
+                has_kid= true;
+            }
+            else if(nodes_layer[neighbor]== 0){ // 該node未處理
+                nodes_layer[neighbor]= now_layer+1;
+                next_layer.push(neighbor);
+                has_kid= true; // so this node is not leaf;
+            }
+            else{ // 其他情況(不可行)
+                return false; // 無法形成
+            }
+        }
+        if(!has_kid){
+            leaves.push_back(node);
+        }
+        return true;
+    }
+    int count_group(int node, int n){
+        vector<bool> visited(n, false); // visited or not
+        visited[node]= true; // set root
+        int local_ans= 1;
+        queue<int> now_layer; // layer a
+        now_layer.push(node);
+        queue<int> next_layer; // layer a+1
+        while(!now_layer.empty() || !next_layer.empty()){
+            if(now_layer.empty()){ // layer a run out, go to 
+                local_ans+= 1;
+                now_layer.swap(next_layer);
+                queue<int> empty;
+                next_layer.swap(empty);
+            }
+            for(auto &neighbor : neighbors[now_layer.front()]){
+                if(!visited[neighbor]){
+                    visited[neighbor]= true; // 用過
+                    next_layer.push(neighbor);
+                }
+            }
+            now_layer.pop();
+        }
+        return local_ans;
+    }
+public:
+    int magnificentSets(int n, vector<vector<int>>& edges) {
+        int ans= 0;
+        nodes_layer.resize(n);
+        for(auto &edge : edges){
+            neighbors[edge[0]-1].push_back(edge[1]-1);
+            neighbors[edge[1]-1].push_back(edge[0]-1);
+        }
+        for(int i= 0; i< n; i++){
+            if(nodes_layer[i]== 0){
+                nodes_layer[i]= 2; // 起始層不重要，反正後面會重算
+                queue<int> next_layer;
+                next_layer.push(i);
+                if(!find_leaf(next_layer)){
+                    return -1;
+                }
+                else{
+                    int max_local_ans= 0;
+                    for(auto &leaf : leaves){
+                        max_local_ans= max(max_local_ans, count_group(leaf, n));
+                    }
+                    ans+= max_local_ans;
+                    leaves.clear();
+                }
+            }
+        }
+        return ans;
+    }
+};
