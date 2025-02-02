@@ -1,0 +1,61 @@
+// 題目本身不難，但看樣子我的程式還有待補強，速度跟消耗都比較大
+// 總之就是分區並記錄該區域大小，接著逐點假設該點存在的影響，邏輯跟別人比應該是差不多，但寫法可能不夠好
+
+class Solution {
+private:
+    vector<vector<int>> directions= {{1,0},{-1,0},{0,1},{0,-1}};
+    int spreed(vector<vector<int>>& grid, int group_num, int x, int y, int group_size){
+        grid[x][y]= group_num;
+        group_size++;
+        for(auto &direction : directions){
+            int nx= x+ direction[0], ny= y+ direction[1];
+            if(nx< grid.size() && nx>=0 &&
+                ny< grid[0].size() && ny>=0 &&
+                grid[nx][ny]== 1){
+                group_size= spreed(grid, group_num, nx, ny, group_size);
+            }
+        }
+        return group_size;
+    }
+    int add_new_land(vector<vector<int>>& grid, int x, int y, vector<int>& group_sizes){
+        set<int> neighbors;
+        for(auto &direction : directions){
+            int nx= x+ direction[0], ny= y+ direction[1];
+            if(nx< grid.size() && nx>=0 &&
+                ny< grid[0].size() && ny>=0){
+                neighbors.insert(grid[nx][ny]);
+            }
+        }
+        int after_add= 0;
+        for(auto &neibor_group : neighbors){
+            after_add+= group_sizes[neibor_group];
+        }
+        return after_add;
+    }
+public:
+    int largestIsland(vector<vector<int>>& grid) {
+        int ans= 0;
+        int group_num= 2;
+        vector<int> group_sizes={0, 0};
+        int m= grid.size(), n= grid[0].size();
+        for(int i= 0; i< m; i++){
+            for(int j= 0; j< n; j++){
+                if(grid[i][j]== 1){
+                    group_sizes.push_back(spreed(grid, group_num, i, j, 0));
+                    group_num++;
+                }
+            }
+        }
+        bool full_flag= true;
+        for(int i= 0; i< m; i++){
+            for(int j= 0; j< n; j++){
+                if(grid[i][j]== 0){
+                    full_flag= false;
+                    ans= max(ans, 1+add_new_land(grid, i, j, group_sizes));
+                }
+            }
+        }
+        if(full_flag){return grid.size()* grid[0].size();}
+        return ans;
+    }
+};
