@@ -1,0 +1,38 @@
+// 我看到比較快的寫法是color_to_ball存數字(幾顆球)，判斷速度會快很多
+
+class Solution {
+private:
+    int create_insert_ball(unordered_map<int, list<int>>& color_to_ball, int color, int ball, int local_map_size){
+        if(color_to_ball.count(color)== 0){
+            color_to_ball[color]= {};
+        }
+        if(color_to_ball[color].empty()){
+            local_map_size++;
+        }
+        color_to_ball[color].push_back(ball);
+        return local_map_size;
+    }
+public:
+    vector<int> queryResults(int limit, vector<vector<int>>& queries) {
+        unordered_map<int, int> color;
+        unordered_map<int, list<int>> color_to_ball;
+        vector<int> ans;
+        int local_map_size= 0;
+        for(int i= 0; i< queries.size(); i++){
+            if(color.count(queries[i][0])== 0){ // 首次指定顏色
+                color[queries[i][0]]= queries[i][1];
+                local_map_size= create_insert_ball(color_to_ball, queries[i][1], queries[i][0], local_map_size);
+            }
+            else{ // 該球已有顏色
+                color_to_ball[color[queries[i][0]]].remove(queries[i][0]);
+                if(color_to_ball[color[queries[i][0]]].empty()){
+                    local_map_size--;
+                }
+                color[queries[i][0]]= queries[i][1];
+                local_map_size= create_insert_ball(color_to_ball, queries[i][1], queries[i][0], local_map_size);
+            }
+            ans.push_back(local_map_size);
+        }
+        return ans;
+    }
+};
