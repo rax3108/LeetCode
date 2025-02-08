@@ -1,0 +1,40 @@
+// 這題目的標準輸入輸出真的讓我有點摸不著頭緒
+// 總之我在找null是要我輸出什麼的時候不小心看到別人find那邊進行pop操作，算是有點作弊了
+
+class NumberContainers {
+private:
+    unordered_map<int, priority_queue<int, vector<int>, greater<int>>> num_to_index;
+    unordered_map<int, int> index_to_num;
+public:
+    NumberContainers() {
+        
+    }
+    
+    void change(int index, int number) {
+        index_to_num[index]= number;
+        num_to_index[number].push(index);
+    }
+    
+    int find(int number) {
+        if(num_to_index.find(number)== num_to_index.end()){
+            return -1;
+        }
+        while(!num_to_index[number].empty()){
+            int index= num_to_index[number].top();
+            if(index_to_num[index]== number){
+                return index;
+            }
+            else{
+                num_to_index[number].pop();
+            }
+        }
+        return -1;
+    }
+};
+
+/**
+ * Your NumberContainers object will be instantiated and called as such:
+ * NumberContainers* obj = new NumberContainers();
+ * obj->change(index,number);
+ * int param_2 = obj->find(number);
+ */
