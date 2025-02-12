@@ -1,0 +1,29 @@
+class Solution {
+private:
+    int digitSum(int num){ // 算各位數和
+        int d_sum= 0;
+        while(num!= 0){
+            d_sum+= num% 10;
+            num/= 10;
+        }
+        return d_sum;
+    }
+public:
+    int maximumSum(vector<int>& nums) {
+        int ans= -1;
+        unordered_map<int, pair<int, int>> num_max;
+        for(int i= 0; i< nums.size(); i++){
+            int d_sum= digitSum(nums[i]);
+            int a= num_max[d_sum].first, b= num_max[d_sum].second, c= nums[i]; // 下面這三行是在first存最大數，second存次大數，寫入方式應該有更快的方法，但影響不大
+            num_max[d_sum].first= max(a, max(b, c));
+            num_max[d_sum].second= a + b - num_max[d_sum].first - min(a, min(b, c)) + c; // 這邊如果先算a+b+c會爆掉= =，真的白癡
+        }
+        for(const auto& d_num : num_max){
+            if(d_num.second.second== 0){
+                continue;
+            }
+            ans= max(ans, d_num.second.first+d_num.second.second);
+        }
+        return ans;
+    }
+};
