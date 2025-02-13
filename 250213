@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int minOperations(vector<int>& nums, int k) {
+        priority_queue<int, vector<int>, greater<int>> pq_nums(nums.begin(), nums.end()); // 最小堆
+        int ans= 0;
+        while(pq_nums.size()> 1 && pq_nums.top()< k){
+            int fir_min_nums= pq_nums.top();
+            pq_nums.pop();
+            int sec_min_nums= pq_nums.top();
+            pq_nums.pop();
+            long tmpLong = static_cast<long>(fir_min_nums)* 2+ sec_min_nums; // 轉long才不會爆掉
+            int tmp = (tmpLong > INT_MAX) ? k : static_cast<int>(tmpLong);
+            pq_nums.push(tmp);
+            ans++;
+        }
+        return ans;
+    }
+};
