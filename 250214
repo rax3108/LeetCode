@@ -1,0 +1,25 @@
+// 怎麼說...，有想過這樣寫，但沒想到測資真的不會超過，原本還以為會爆掉
+// 簡單說就是每次增加數字就存入原本的尾數*新數字，得到乘積陣列，輸出就是尾端/指定位置而已
+
+class ProductOfNumbers {
+private:
+    vector<int> prod={1};
+public:
+    ProductOfNumbers() {
+    }
+    
+    void add(int num) {
+        if(num== 0){
+            prod.clear();
+            prod.push_back(1);
+        }
+        else{
+            prod.push_back(prod.back()* num);
+        }
+        return;
+    }
+    
+    int getProduct(int k) {
+        return (k < prod.size()) ? prod.back()/prod[prod.size()-k-1] : 0;
+    }
+};
