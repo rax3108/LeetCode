@@ -1,0 +1,44 @@
+// 用預處理就可以了，條件苛刻且定義域小，預處理效益明顯更大
+// 這題的正規算法我是參考別人的，不得不說寫得很好，沒什麼可以精煉的
+// 基本概念就是拆分，要注意的是隨著定義域擴大，return處理的位數也要相應的擴大(10000之類的)
+
+class Solution {
+private:
+    // 想辦法把平方(num)拆回原數字(target)
+    bool is_punish(int target, int num){
+        if (target< 0 || num< target){
+            return false;
+        }
+        if (num== target){
+            return true;
+        }
+        return is_punish(target- num% 10, num/ 10) ||
+               is_punish(target- num% 100, num/ 100) ||
+               is_punish(target- num% 1000, num/ 1000);
+    }
+public:
+    int punishmentNumber(int n) {
+        if(n<= 1000){
+            return less_than_1000(n);
+        }
+        int ans= 0;
+        for(int i= 1; i<= n; i++){
+            int square= i* i;
+            if(is_punish(i, square)){
+                ans+= square;
+            }
+        }
+        return ans;
+    }
+    int less_than_1000(int n){
+        int arr[] = { 1, 9, 10, 36, 45, 55, 82, 91, 99, 100,
+         235, 297, 369, 370, 379, 414, 657, 675, 703, 756, 792,
+         909, 918, 945, 964, 990, 991, 999, 1000 };
+        int ans= 0;
+        for(int i= 0; i< 29; i++){
+            if(arr[i]<= n){ans+= arr[i]*arr[i];}
+            else{break;}
+        }
+        return ans;
+    }
+};
