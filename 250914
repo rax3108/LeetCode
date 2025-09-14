@@ -1,0 +1,49 @@
+class Solution {
+private:
+    unordered_map<string, vector<string>> sorted_wl_l;
+    unordered_map<string, string> sorted_wl_star;
+    string vowels = "aeiouAEIOU";
+
+    void sort_wl(vector<string>& wordlist){
+        string str_star, str_l;
+        for(int i= 0; i< wordlist.size(); i++){
+            for(char &c : wordlist[i]){ // find corresponding label
+                str_l += string(1, tolower(c));
+                str_star += (vowels.find(c) != string::npos) ? "*" : string(1, tolower(c));
+            }
+            // push them into label
+            sorted_wl_l[str_l].push_back(wordlist[i]);
+            if(sorted_wl_star[str_star] == "")
+                sorted_wl_star[str_star] = wordlist[i];
+            str_star = "";
+            str_l = "";
+        }
+    }
+
+public:
+    vector<string> spellchecker(vector<string>& wordlist, vector<string>& queries) {
+        sort_wl(wordlist);
+        vector<string> ans;
+        string que_mem_l, que_mem_star; // standardizated label
+        for(int i= 0; i< queries.size(); i++){
+            que_mem_l = "";
+            que_mem_star = "";
+            for(char &c : queries[i]){ // to corresponding label
+                que_mem_l += string(1, tolower(c));
+                que_mem_star += (vowels.find(c) != string::npos) ? "*" : string(1, tolower(c));
+            }
+            if(sorted_wl_l.count(que_mem_l) > 0){ // if word exist in wl_l
+                auto it = find(sorted_wl_l[que_mem_l].begin(), sorted_wl_l[que_mem_l].end(), queries[i]);
+                if(it != sorted_wl_l[que_mem_l].end()) // if exist same word
+                    ans.push_back(sorted_wl_l[que_mem_l][distance(sorted_wl_l[que_mem_l].begin(), it)]);
+                else
+                    ans.push_back(sorted_wl_l[que_mem_l][0]);
+            }
+            else if(sorted_wl_star[que_mem_star] != "") // if word exist in wl_star
+                ans.push_back(sorted_wl_star[que_mem_star]);
+            else
+                ans.push_back("");
+        }
+        return ans;
+    }
+};
