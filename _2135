@@ -1,0 +1,30 @@
+class Solution {
+    private:
+        int sw_data(const string &w) {
+            int mask = 0;
+            for (char c : w)
+                mask |= (1 << (c-'a'));
+            return mask;
+        }
+public:
+    int wordCount(vector<string>& startWords, vector<string>& targetWords) {
+        unordered_set<int> sw;
+        for (auto &w : startWords)
+            sw.insert(sw_data(w));
+        int ans = 0;
+        for (auto &w : targetWords) {
+            int tw = sw_data(w);
+            bool can_match = false;
+            for (char c : w){
+                int new_tw = tw - (1 << (c - 'a'));
+                if (sw.count(new_tw)){
+                    can_match = true;
+                    break;
+                }
+            }
+            if (can_match)
+                ans++;
+        }
+        return ans;
+    }
+};
