@@ -1,0 +1,23 @@
+class Solution {
+    private:
+    int GCD(int n,int m){
+        return  m == 0 ? n : GCD(m, n % m);
+    }
+public:
+    vector<int> replaceNonCoprimes(vector<int>& nums) {
+        vector<int> ans={nums[0]}; // stack應該更快，但比較麻煩
+        int pointer= 1;
+        for(int i= 1; i< nums.size(); i++){
+            ans.push_back(nums[i]);
+            while(ans.size()>1){ // 不斷抓stack最後兩位，直到他們互質
+                int a= ans[ans.size()-1];
+                int b= ans[ans.size()-2];
+                int gcd= GCD(a, b);
+                if(gcd== 1) break;
+                ans.pop_back(); ans.pop_back();
+                ans.push_back(a / gcd * b);
+            }
+        }
+        return ans;
+    }
+};
