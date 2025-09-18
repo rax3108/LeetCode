@@ -1,0 +1,55 @@
+class TaskManager {
+    private:
+    struct Cmp {
+        bool operator()(const pair<int,int>& a, const pair<int,int>& b) const {/*
+            if (a.first != b.first) 
+                return a.first > b.first;
+            return a.second > b.second;*/
+            return (a.first != b.first) ? (a.first > b.first) : a.second > b.second;
+        }
+    };
+    unordered_map<int, pair<int, int>> task_pri_usr;
+    set<pair<int, int>, Cmp> pri_task;
+
+public:
+    TaskManager(vector<vector<int>>& tasks) { //tasks[i][]
+        for(int i= 0; i< tasks.size(); i++){
+            task_pri_usr[tasks[i][1]] = {tasks[i][2], tasks[i][0]};
+            pri_task.insert({tasks[i][2], tasks[i][1]});
+        }
+    }
+    
+    void add(int userId, int taskId, int priority) {
+        task_pri_usr[taskId] = {priority, userId};
+        pri_task.insert({priority, taskId});
+    }
+    
+    void edit(int taskId, int newPriority) {
+        pri_task.erase({task_pri_usr[taskId].first, taskId});
+        task_pri_usr[taskId].first = newPriority;
+        pri_task.insert({newPriority, taskId});
+    }
+    
+    void rmv(int taskId) {
+        pri_task.erase({task_pri_usr[taskId].first, taskId});
+        task_pri_usr.erase(taskId);
+    }
+    
+    int execTop() {
+        if(pri_task.empty()) return -1;
+        auto [pri, taskId] = *pri_task.begin();
+        int usr = task_pri_usr[taskId].second;
+        pri_task.erase(pri_task.begin());
+        task_pri_usr.erase(taskId);
+        return usr;
+    }
+};
+
+/**
+ * Your TaskManager object will be instantiated and called as such:
+ * TaskManager* obj = new TaskManager(tasks);
+ * obj->add(userId,taskId,priority);
+ * obj->edit(taskId,newPriority);
+ * obj->rmv(taskId);
+ * int param_4 = obj->execTop();
+ */
