@@ -1,0 +1,33 @@
+class Spreadsheet {
+    private:
+    unordered_map<string, int> cells={}; // 我沒有使用題目規定的資料結構，因為使用unordered_map搜尋速度應該差不多(或更快我猜)
+public:
+    Spreadsheet(int rows) {
+        
+    }
+    
+    void setCell(string cell, int value) {
+        cells[cell]= value;
+    }
+    
+    void resetCell(string cell) {
+        cells[cell]= 0;
+    }
+    
+    int getValue(string formula) {
+        string A = formula.substr(1, formula.find('+') - 1);
+        string B = formula.substr(formula.find('+') + 1);
+        int A_int, B_int;
+        A_int = (cells.find(A) == cells.end()) ? (!A.empty() && all_of(A.begin(), A.end(), ::isdigit) ? stoi(A) : 0) : cells[A];
+        B_int = (cells.find(B) == cells.end()) ? (!B.empty() && all_of(B.begin(), B.end(), ::isdigit) ? stoi(B) : 0) : cells[B];
+        return (A_int + B_int);
+    }
+};
+
+/**
+ * Your Spreadsheet object will be instantiated and called as such:
+ * Spreadsheet* obj = new Spreadsheet(rows);
+ * obj->setCell(cell,value);
+ * obj->resetCell(cell);
+ * int param_3 = obj->getValue(formula);
+ */
